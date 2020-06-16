@@ -1,4 +1,4 @@
-"""Moose Config core."""
+"""The Moose Configurator core."""
 import logging
 import os
 
@@ -7,16 +7,35 @@ import json
 
 logger = logging.getLogger(__name__)
 
-_MOOSE_CFG_FILE_EXTENSION: str = 'yml'
+_MOOSE_UPDATE_AT_INIT: bool = True
 _MOOSE_SYSTEM_OVERRIDE: bool = False
-_MOOSE_LOAD_LOCAL_CFG: bool = True
-_MOOSE_UPDATE_AT_INIT: bool = False
+_MOOSE_LOCAL_FILE_LOAD: bool = True
+_MOOSE_LOCAL_FILE_HIDDEN: bool = True
 
 
 class MooseConfigurator:
-    """The Moose Configurator."""
+    """The Moose Configurator.
+
+    Manage multiple configuration files.
+
+    Examples
+    --------
+
+    cfg = MooseConfigurator('appname')
+
+    cfg = MooseConfigurator(name='appname', extension='cfg', defaults={'server': 'test.example.com'})
+
+    Attributes
+    ----------
+    name : str
+        Configuration name.
+    extension : str, optional, 'yml'
+        Extension for configuration filenames.
+    defaults : dict, optional
+        Name/value pairs to set as defaults.
+    """
     _name: str = __name__
-    _extension: str = _MOOSE_CFG_FILE_EXTENSION
+    _extension: str = 'yml'
 
     _defaults: dict = {}
     _system_cfg: dict = {}
@@ -25,14 +44,17 @@ class MooseConfigurator:
 
     _obj: dict = {}
 
-    # System configuration overrides user and local if True.
-    SYSTEM_OVERRIDE: bool = _MOOSE_SYSTEM_OVERRIDE
-
-    # Load local configuration if True.
-    LOAD_LOCAL_CFG: bool = _MOOSE_LOAD_LOCAL_CFG
-
-    # Configuration updated on init if True.
     UPDATE_AT_INIT: bool = _MOOSE_UPDATE_AT_INIT
+    """bool: Configuration updated on init if True."""
+
+    SYSTEM_OVERRIDE: bool = _MOOSE_SYSTEM_OVERRIDE
+    """bool: System configuration overrides user and local if True."""
+
+    LOCAL_FILE_LOAD: bool = _MOOSE_LOCAL_FILE_LOAD
+    """bool: Load local configuration if True."""
+
+    LOCAL_FILE_HIDDEN: bool = _MOOSE_LOCAL_FILE_HIDDEN
+    """bool: Seek hidden file for configuration."""
 
     def __init__(self, name: str = None, extension: str = None, defaults: dict = None):
         if name:
@@ -47,7 +69,6 @@ class MooseConfigurator:
             self._defaults = defaults
         logger.info(f'defaults: {defaults}')
 
-        # load configuration files
         self.load()
         logger.info(f'configuration files loaded.')
 
@@ -75,6 +96,16 @@ class MooseConfigurator:
         logger.debug(f'default value: {value}')
 
     @property
+    def defaults(self) -> dict:
+        """Configuration defaults."""
+        return self._defaults
+
+    def defaults_update(self) -> None:
+        """Set configuration defaults."""
+        for key in self.defaults.keys():
+            self._obj_setdefault(key, self.defaults.get(key))
+
+    @property
     def name(self) -> str:
         """Configuration name."""
         return self._name
@@ -85,7 +116,7 @@ class MooseConfigurator:
         return self._extension
 
     @property
-    def file_name(self) -> str:
+    def filename(self) -> str:
         """Configuration file name."""
         return f'{self.name}.{self.extension}'
 
@@ -97,12 +128,13 @@ class MooseConfigurator:
     @property
     def system_cfg_path(self) -> str:
         """System configuration path."""
+        # TODO set system path based on OS.
         return os.path.abspath(f'/etc/{self.name}')
 
     @property
     def system_cfg_file(self) -> str:
         """System configuration file."""
-        return os.path.join(self.system_cfg_path, self.file_name)
+        return os.path.join(self.system_cfg_path, self.filename)
 
     def system_cfg_load(self) -> None:
         """Load system configuration."""
@@ -116,19 +148,20 @@ class MooseConfigurator:
         logger.info(f'Configuration updated from system.')
 
     @property
-    def user_cfg(self):
+    def user_cfg(self) -> dict:
         """User configuration."""
         return self._user_cfg
 
     @property
     def user_cfg_path(self) -> str:
         """User configuration path."""
+        # TODO set user config path based on OS.
         return os.path.abspath(os.path.join(os.path.expanduser('~/.config'), self.name))
 
     @property
     def user_cfg_file(self) -> str:
         """User configuration file."""
-        return os.path.join(self.user_cfg_path, self.file_name)
+        return os.path.join(self.user_cfg_path, self.filename)
 
     def user_cfg_load(self) -> None:
         """Load user configuration."""
@@ -154,7 +187,11 @@ class MooseConfigurator:
     @property
     def local_cfg_file(self) -> str:
         """Local configuration file."""
-        return os.path.join(self.local_cfg_path, f'.{self.file_name}')
+        _filename: str = self.filename
+        if self.LOCAL_FILE_HIDDEN:
+            _filename = f'.{_filename}'
+
+        return os.path.join(self.local_cfg_path, f'{_filename}')
 
     def local_cfg_load(self) -> None:
         """Load local configuration."""
@@ -173,7 +210,7 @@ class MooseConfigurator:
 
         self.user_cfg_load()
 
-        if self.LOAD_LOCAL_CFG:
+        if self.LOCAL_FILE_LOAD:
             self.local_cfg_load()
             
         logger.info(f'configuration loaded.')

@@ -1,0 +1,5 @@
+---
+servername: test.example.com
+username: user1
+critical_alert_color: red
+import_id_number: 3412
