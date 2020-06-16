@@ -1,0 +1,1 @@
+"""click cli to manage local secrets."""
