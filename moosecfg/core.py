@@ -7,14 +7,14 @@ from moosecfg.util import MooseYamlSource, MooseConfiguratorSource
 
 logger = logging.getLogger(__name__)
 
-_MOOSECFG_UPDATE_AT_INIT: bool = os.getenv('MOOSECFG_UPDATE_AT_INIT', True)
-_MOOSECFG_SYSTEM_OVERRIDE: bool = os.getenv('MOOSECFG_SYSTEM_OVERRIDE', False)
-_MOOSECFG_LOCAL_FILE_LOAD: bool = os.getenv('MOOSECFG_LOCAL_FILE_LOAD', True)
-_MOOSECFG_LOCAL_FILE_HIDDEN: bool = os.getenv('MOOSECFG_LOCAL_FILE_HIDDEN', True)
+_UPDATE_AT_INIT: bool = os.getenv('MOOSECFG_UPDATE_AT_INIT', True)
+_SYSTEM_OVERRIDE: bool = os.getenv('MOOSECFG_SYSTEM_OVERRIDE', False)
+_LOCAL_FILE_LOAD: bool = os.getenv('MOOSECFG_LOCAL_FILE_LOAD', True)
+_LOCAL_FILE_HIDDEN: bool = os.getenv('MOOSECFG_LOCAL_FILE_HIDDEN', True)
 
-_MOOSECFG_SYSTEM_CFG_DIR: str = os.getenv('MOOSECFG_SYSTEM_CFG_DIR', os.path.abspath('/etc'))
-_MOOSECFG_USER_CFG_DIR: str = os.getenv('XDG_CONFIG_HOME', os.path.join(os.path.expanduser('~'), '.config'))
-_MOOSECFG_LOCAL_CFG_DIR: str = os.getenv('MOOSECFG_LOCAL_CFG_DIR', os.path.abspath(os.getcwd()))
+_SYSTEM_CFG_DIR: str = os.getenv('MOOSECFG_SYSTEM_CFG_DIR', os.path.abspath('/etc'))
+_USER_CFG_DIR: str = os.getenv('XDG_CONFIG_HOME', os.path.join(os.path.expanduser('~'), '.config'))
+_LOCAL_CFG_DIR: str = os.getenv('MOOSECFG_LOCAL_CFG_DIR', os.path.abspath(os.getcwd()))
 
 
 class MooseConfigurator:
@@ -53,25 +53,25 @@ class MooseConfigurator:
     user: MooseYamlSource = None
     local: MooseYamlSource = None
 
-    UPDATE_AT_INIT: bool = _MOOSECFG_UPDATE_AT_INIT
-    """bool: Configuration updated on init if True."""
+    UPDATE_AT_INIT: bool = _UPDATE_AT_INIT
+    """bool: Configuration updated from sources on init."""
 
-    SYSTEM_OVERRIDE: bool = _MOOSECFG_SYSTEM_OVERRIDE
-    """bool: System configuration overrides user and local if True."""
+    SYSTEM_OVERRIDE: bool = _SYSTEM_OVERRIDE
+    """bool: System configuration source overrides all sources."""
 
-    LOCAL_FILE_LOAD: bool = _MOOSECFG_LOCAL_FILE_LOAD
+    LOCAL_FILE_LOAD: bool = _LOCAL_FILE_LOAD
     """bool: Load local configuration if True."""
 
-    LOCAL_FILE_HIDDEN: bool = _MOOSECFG_LOCAL_FILE_HIDDEN
+    LOCAL_FILE_HIDDEN: bool = _LOCAL_FILE_HIDDEN
     """bool: Seek hidden file for configuration."""
 
-    SYSTEM_CFG_DIR: str = _MOOSECFG_SYSTEM_CFG_DIR
+    SYSTEM_CFG_DIR: str = _SYSTEM_CFG_DIR
     """str: system configuration directory."""
 
-    USER_CFG_DIR: str = _MOOSECFG_USER_CFG_DIR
+    USER_CFG_DIR: str = _USER_CFG_DIR
     """str: user configuration directory."""
 
-    LOCAL_CFG_DIR: str = _MOOSECFG_LOCAL_CFG_DIR
+    LOCAL_CFG_DIR: str = _LOCAL_CFG_DIR
     """str: local configuration directory."""
 
     def __init__(self, name: str = None, author: str = None, version: str = None, extension: str = None,
