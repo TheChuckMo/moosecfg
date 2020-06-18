@@ -4,7 +4,7 @@ import os
 import yaml
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 
 class MooseConfiguratorSource:
@@ -14,7 +14,7 @@ class MooseConfiguratorSource:
     _name: str = None
     _location: str = None
 
-    def __init__(self, name: str, location: str):
+    def __init__(self, name: str, location: str, **kwargs):
         self._name = name
         self._location = location
 
@@ -45,6 +45,14 @@ class MooseConfiguratorSource:
     def write(self) -> None:
         """Write to source."""
         pass
+
+
+# class MooseHttpYamlSource(MooseConfiguratorSource):
+#     """Moose Configurator HTTP source file."""
+#     @property
+#     def is_readable(self) -> bool:
+#         """bool: source is readable."""
+#         return False
 
 
 class MooseYamlSource(MooseConfiguratorSource):
