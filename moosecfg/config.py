@@ -41,15 +41,13 @@ class MooseConfigurator:
     _obj: dict = {}
     _defaults: dict = {}
 
-    dirs: MooseDirs = MooseDirs()
-    """MooseDirs: directories for system and user locations."""
+    _dirs: MooseDirs = MooseDirs()
 
-    sources: dict = {
+    _sources: dict = {
         'system': [MooseYamlSource],
         'user': [MooseYamlSource],
         'local': [MooseYamlSource]
     }
-    """Configurator sources config."""
 
     system: MooseConfiguratorSource = None
     """MooseConfiguratorSource: System configuration source."""
@@ -115,6 +113,20 @@ class MooseConfigurator:
             """update configuration object from sources."""
             logger.debug(f'configuration: {json.dumps(self.obj)}')
             logger.info(f'configuration updated.')
+
+    @property
+    def dirs(self) -> MooseDirs:
+        """MooseDirs: Configuration directories."""
+        return self._dirs
+
+    @property
+    def sources(self) -> dict:
+        """dict: Configurator sources."""
+        return self._sources
+
+    def _init_dirs(self) -> None:
+        """Initialize self.dirs."""
+        self._dirs = MooseDirs(name=self.name, environment=self.environment, version=self.version)
 
     @property
     def obj(self) -> dict:
@@ -190,10 +202,6 @@ class MooseConfigurator:
             _filename = f'.{_filename}'
 
         return os.path.abspath(os.path.join(self.dirs.local_config, _filename))
-
-    def _init_dirs(self) -> None:
-        """Initialize MooseDirs."""
-        self.dirs = MooseDirs(name=self.name, environment=self.environment, version=self.version)
 
     def _init_system_source(self) -> None:
         """Initialize system configuration source."""

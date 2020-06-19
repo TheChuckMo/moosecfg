@@ -2,30 +2,47 @@
 
 import os
 import yaml
+import json
 import logging
+from urllib.request import Request
+from urllib.request import urlopen
 
 logger = logging.getLogger()
 
 
 class MooseConfiguratorSource:
-    """Moose Configurator source base class."""
+    """Moose Configurator source base class.
+
+    src = MooseConfiguratorSource(name="system", location="/etc/appname/appname.cfg")
+
+    Parameters
+    ----------
+    name : str
+    location : str
+    """
     obj: dict = {}
     meta: dict = {}
     _name: str = None
     _location: str = None
 
-    def __init__(self, name: str, location: str, **kwargs):
+    def __init__(self, name: str, location: str):
         self._name = name
         self._location = location
 
+    def __repr__(self):
+        return f'{self.__class__.__name__}(name="{self.name}", location="{self.location}")'
+
+    def __str__(self):
+        return f'{self.name}'
+
     @property
     def name(self) -> str:
-        """Source name."""
+        """str: Source name."""
         return self._name
 
     @property
     def location(self) -> str:
-        """Source file."""
+        """str: Source file."""
         return self._location
 
     @property
@@ -47,17 +64,60 @@ class MooseConfiguratorSource:
         pass
 
 
-# class MooseHttpYamlSource(MooseConfiguratorSource):
-#     """Moose Configurator HTTP source file."""
-#     @property
-#     def is_readable(self) -> bool:
-#         """bool: source is readable."""
-#         return False
+class MooseHttpYamlSource(MooseConfiguratorSource):
+    """Moose Configurator HTTP yaml source file."""
+
+    def read(self) -> None:
+        """Read configuration file."""
+        _data: dict = {}
+        with urlopen(self.location) as _res:
+            if _res.status is 'OK':
+                _data = yaml.safe_load(_res.read())
+        self.obj = _data.copy()
+        logger.info(f'{self.name} source {self.location} read.')
+
+    @property
+    def is_readable(self) -> bool:
+        """bool: source is readable."""
+        _readable: bool = False
+        with urlopen(Request(self.location, method='HEAD')) as _res:
+            if _res.status is 'OK':
+                _readable = True
+        return _readable
+
+
+class MooseHttpJsonSource(MooseConfiguratorSource):
+    """Moose Configurator HTTP json source file."""
+    _headers: dict = { 'CONTENT-TYPE': 'application/json' }
+
+    def read(self) -> None:
+        """Read json configuration from http."""
+        _data: dict = {}
+        with urlopen(Request(self.location, headers=self._headers)) as _res:
+            _data = json.load(_res.read())
+        self.obj = _data.copy()
+        logger.info(f'{self.name} source {self.location} read.')
+
+    @property
+    def is_readable(self) -> bool:
+        """bool: source is readable."""
+        _readable: bool = False
+        with urlopen(Request(self.location, headers=self._headers, method='HEAD')) as _res:
+            if _res.status is 'OK':
+                _readable = True
+        return _readable
 
 
 class MooseYamlSource(MooseConfiguratorSource):
-    """Moose Configurator yaml source from file."""
+    """Moose Configurator yaml source from file.
 
+    src = MooseYamlSource(name="system", location="/etc/appname/appname.cfg")
+
+    Parameters
+    ----------
+    name : str
+    location : str
+    """
     @property
     def is_readable(self) -> bool:
         """bool: source is readable."""
@@ -88,7 +148,7 @@ class MooseYamlSource(MooseConfiguratorSource):
         self.obj = _data.copy()
         logger.info(f'{self.name} source file {self.location} read.')
 
-    def write(self):
+    def write(self) -> None:
         """Write yaml configuration file."""
         _dir: str = os.path.dirname(self.location)
         if not os.path.isdir(_dir):
