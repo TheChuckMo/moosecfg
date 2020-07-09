@@ -1,2 +1,13 @@
 site_name: The Moose Configurator
+theme: readthedocs
+site_url: "https://cfg.moosejudge.com"
+repo_url: "https://gitlab.com/TheChuckMo/moosecfg"
+site_author: "Chuck Mo <chuck@moosejudge.com>"
 
+prebuild_index: true
+
+markdown_extensions:
+  - smarty
+  - toc:
+      permalink: True
+  - sane_lists

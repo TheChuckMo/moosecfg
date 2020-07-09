@@ -2,6 +2,22 @@
 name = "moosecfg"
 version = "0.2.1"
 description = "The Moose Configurator"
+license = "GPL-3.0-or-later"
+readme = "README.md"
+homepage = "https://cfg.moosejudge.com"
+repository = "https://gitlab.com/TheChuckMo/moosecfg"
+documentation = "https://cfg.moosejudge.com/docs"
+classifiers = [
+    #"Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
+    #"Development Status :: 5 - Production/Stable",
+    "Environment :: MacOS X",
+    "Operating System :: POSIX",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Unix",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities"
+]
 authors = ["Chuck Mo <chuck@moosejudge.com>"]
 
 [tool.poetry.dependencies]

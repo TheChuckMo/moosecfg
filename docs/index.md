@@ -1,17 +1,50 @@
-# Welcome to MkDocs
+# The Moose Configurator
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+A python application configuration manager.
 
-## Commands
+## Features
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+  - Manage Application Configurations in PyYaml.
+  - Set defaults for missing configuration items.
+  - Three levels of configuration.
+    - System: /etc/sample/sample.yml
+    - User: ~/.config/sample/sample.yml
+    - Local: `cwd`
+  - Configuration load and read customization.
+    - Force system configuration override.
+    - Ignore local configuration.
+    - User hidden local configuration (dot-file).
+  - XDG specification directory locations.
 
-## Project layout
+## Quick Start
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+1. Install moosecfg
+    - global: `python -m pip install moosecfg`
+    - user: `python -m pip install --user moosecfg`
+2. Create yaml configuration files
+    - system: `/etc/appname/appname.cfg`
+    - user: `$HOME/.config/appname/appname.cfg`
+    - local: `<cwd>/appname.cfg`
+3. Read the configuration
+
+    ```
+    cfg = MooseConfigurator('appname')
+    print(f'configuration object: {cfg.obj}')
+    ```
+
+
+## Usage
+
+```python
+from moosecfg.config import MooseConfigurator
+
+MooseConfigurator.SYSTEM_OVERRIDE = True
+
+cfg = MooseConfigurator('coolapp')
+
+server = cfg.obj.get('servername')
+proxy = cfg.obj.get('proxy')
+ptqmax = cfg.obj.get('ptq_max')
+
+...
+```

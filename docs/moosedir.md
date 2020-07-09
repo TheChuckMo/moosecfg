@@ -1,3 +1,7 @@
+# Moose Directories
+
+# TODO: write this
+
 # OS Config Locations
 
 Uses XDG Spec for everything.
