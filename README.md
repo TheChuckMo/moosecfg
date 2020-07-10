@@ -1,8 +1,12 @@
 # The Moose Configurator
 
-The Moose Configurator.
+## QuickStart
 
-- Manage Application Configurations in PyYaml.
+`python -m pip install --user moosecfg`
+
+## Features
+
+- Yaml based configuration files.
 - Set defaults for missing configuration items.
 - Three levels of configuration.
   - System: /etc/sample/sample.yml
