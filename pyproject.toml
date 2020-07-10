@@ -6,7 +6,7 @@ license = "GPL-3.0-or-later"
 readme = "README.md"
 homepage = "https://cfg.moosejudge.com"
 repository = "https://gitlab.com/TheChuckMo/moosecfg"
-documentation = "https://cfg.moosejudge.com/docs"
+documentation = "https://cfg.moosejudge.com"
 classifiers = [
     #"Development Status :: 3 - Alpha",
     "Development Status :: 4 - Beta",
