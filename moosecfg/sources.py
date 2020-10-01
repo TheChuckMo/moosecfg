@@ -10,10 +10,10 @@ from urllib.request import urlopen
 logger = logging.getLogger()
 
 
-class MooseConfiguratorSource:
-    """Moose Configurator source base class.
+class MooseSourceBase:
+    """Moose source base class.
 
-    src = MooseConfiguratorSource(name="system", location="/etc/appname/appname.cfg")
+    src = MooseSourceBase(name="system", location="/etc/appname/appname.cfg")
 
     Parameters
     ----------
@@ -64,7 +64,7 @@ class MooseConfiguratorSource:
         pass
 
 
-class MooseHttpYamlSource(MooseConfiguratorSource):
+class MooseSourceHttpYaml(MooseSourceBase):
     """Moose Configurator HTTP yaml source file."""
 
     def read(self) -> None:
@@ -86,7 +86,7 @@ class MooseHttpYamlSource(MooseConfiguratorSource):
         return _readable
 
 
-class MooseHttpJsonSource(MooseConfiguratorSource):
+class MooseSourceHttpJson(MooseSourceBase):
     """Moose Configurator HTTP json source file."""
     _headers: dict = { 'CONTENT-TYPE': 'application/json' }
 
@@ -108,10 +108,10 @@ class MooseHttpJsonSource(MooseConfiguratorSource):
         return _readable
 
 
-class MooseYamlSource(MooseConfiguratorSource):
+class MooseSourceYaml(MooseSourceBase):
     """Moose Configurator yaml source from file.
 
-    src = MooseYamlSource(name="system", location="/etc/appname/appname.cfg")
+    src = MooseSourceYaml(name="system", location="/etc/appname/appname.cfg")
 
     Parameters
     ----------

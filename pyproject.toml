@@ -5,7 +5,7 @@ description = "The Moose Configurator"
 license = "GPL-3.0-or-later"
 readme = "README.md"
 homepage = "https://cfg.moosejudge.com"
-repository = "https://gitlab.com/TheChuckMo/moosecfg"
+repository = "https://github.com/TheChuckMo/moosecfg.git"
 documentation = "https://cfg.moosejudge.com"
 classifiers = [
     #"Development Status :: 3 - Alpha",

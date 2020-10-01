@@ -2,61 +2,62 @@
 import json
 import logging
 import os
+from collections import namedtuple
 
 from moosecfg.utils import MooseDirs, _ENV_PRE
-from moosecfg.sources import MooseYamlSource, MooseConfiguratorSource
+from moosecfg.sources import MooseSourceYaml, MooseSourceBase
 
 logger = logging.getLogger()
 
+Source = namedtuple('Source', ['class', 'name', 'location'])
+Dirs = namedtuple('Dirs', ['class', 'app', 'appends', ['None']])
 
-class MooseConfigurator:
-    """The Moose Configurator.
+
+class MooseConfig:
+    """Moose Config.
 
     Manage multiple configuration files.
 
     Examples
     --------
 
-    cfg = MooseConfigurator('appname')
+    cfg = MooseConfig('name')
 
-    cfg = MooseConfigurator(name='appname', extension='cfg', defaults={'server': 'test.example.com'})
+    cfg = MooseConfig(name='name', extension='cfg', defaults={'server': 'test.example.com'})
 
     Attributes
     ----------
     name : str, default=__name__
         Application name.
-    environment : str, default=None
-        Application environment.
+    env : str, default=None
+        Application env.
     version : str, default=None
         Application version.
-    extension : str, default='cfg'
+    ext : str, default='cfg'
         Extension for configuration filenames.
     defaults : dict, default=None
         Name/value pairs to set as defaults.
     """
-    _name: str = __name__
-    _environment: str = None
-    _version: str = None
-    _extension: str = os.getenv(f'{_ENV_PRE}_EXTENSION', 'cfg')
+    __slots__ = ['name', 'env', 'version', 'ext', 'sources']
     _obj: dict = {}
     _defaults: dict = {}
 
     _dirs: MooseDirs = MooseDirs()
 
     _sources: dict = {
-        'system': [MooseYamlSource],
-        'user': [MooseYamlSource],
-        'local': [MooseYamlSource]
+        'system': [MooseSourceYaml],
+        'user': [MooseSourceYaml],
+        'local': [MooseSourceYaml]
     }
 
-    system: MooseConfiguratorSource = None
-    """MooseConfiguratorSource: System configuration source."""
+    system: MooseSourceBase = None
+    """MooseSourceBase: System configuration source."""
 
-    user: MooseConfiguratorSource = None
-    """MooseConfiguratorSource: User configuration source."""
+    user: MooseSourceBase = None
+    """MooseSourceBase: User configuration source."""
 
-    local: MooseConfiguratorSource = None
-    """MooseConfiguratorSource: Local configuration source."""
+    local: MooseSourceBase = None
+    """MooseSourceBase: Local configuration source."""
 
     UPDATE_CFG_AT_INIT: bool = os.getenv(f'{_ENV_PRE}_UPDATE_CFG_AT_INIT', True)
     """bool: Configuration updated from sources on init."""
@@ -73,23 +74,27 @@ class MooseConfigurator:
     LOCAL_FILE_HIDDEN: bool = os.getenv(f'{_ENV_PRE}_LOCAL_FILE_HIDDEN', True)
     """bool: Seek hidden file for configuration."""
 
-    def __init__(self, name: str = None, environment: str = None, version: str = None, extension: str = None,
+    def __init__(self, name: str,
+                 env: str = None,
+                 version: str = None,
+                 ext: str = None,
+                 sources: [Source] = None,
                  defaults: dict = None):
-        if name:
-            self._name = name
-            logger.info(f'name: {name}')
 
-        if environment:
-            self._environment = environment
-            logger.info(f'environment: {environment}')
+        self.name = name
+        logger.info(f'name: {name}')
+
+        if env:
+            self.env = env
+            logger.info(f'env: {env}')
 
         if version:
-            self._version = version
+            self.version = version
             logger.info(f'version: {version}')
 
-        if extension:
-            self._extension = extension
-            logger.info(f'extension: {extension}')
+        if ext:
+            self.ext = ext
+            logger.info(f'ext: {ext}')
 
         if defaults:
             self._defaults = defaults
@@ -126,7 +131,7 @@ class MooseConfigurator:
 
     def _init_dirs(self) -> None:
         """Initialize self.dirs."""
-        self._dirs = MooseDirs(name=self.name, environment=self.environment, version=self.version)
+        self._dirs = MooseDirs(name=self.name, env=self.env, version=self.version)
 
     @property
     def obj(self) -> dict:
@@ -156,30 +161,30 @@ class MooseConfigurator:
         for key in self.defaults.keys():
             self._obj_setdefault(key, self.defaults.get(key))
 
-    @property
-    def name(self) -> str:
-        """Application name."""
-        return self._name
-
-    @property
-    def environment(self) -> str:
-        """Application environment."""
-        return self._environment
-
-    @property
-    def version(self) -> str:
-        """Application version."""
-        return self._version
+    # @property
+    # def name(self) -> str:
+    #     """Application name."""
+    #     return self.name
+    #
+    # @property
+    # def env(self) -> str:
+    #     """Application env."""
+    #     return self.env
+    #
+    # @property
+    # def version(self) -> str:
+    #     """Application version."""
+    #     return self.version
 
     @property
     def extension(self) -> str:
-        """Configuration file extension."""
-        return self._extension
+        """Configuration file ext."""
+        return self.ext
 
     @property
     def filename(self) -> str:
         """Configuration file name."""
-        return f'{self.name}.{self.extension}'
+        return f'{self.name}.{self.ext}'
 
     @property
     def system_location(self) -> str:
@@ -221,7 +226,7 @@ class MooseConfigurator:
         self._init_user_source()
         self._init_local_source()
 
-    def update_from_source(self, source: MooseConfiguratorSource) -> None:
+    def update_from_source(self, source: MooseSourceBase) -> None:
         """Apply source configuration."""
         self._obj_update(source.obj)
         logger.info(f'Configuration source {source.name} applied.')
@@ -262,4 +267,3 @@ class MooseConfigurator:
             self.local.write()
 
         logger.info(f'configuration sources written.')
-

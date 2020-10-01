@@ -28,7 +28,7 @@ A python application configuration manager.
 3. Read the configuration
 
     ```
-    cfg = MooseConfigurator('appname')
+    cfg = MooseConfig('appname')
     print(f'configuration object: {cfg.obj}')
     ```
 
@@ -36,11 +36,11 @@ A python application configuration manager.
 ## Usage
 
 ```python
-from moosecfg.config import MooseConfigurator
+from moosecfg.config import MooseConfig
 
-MooseConfigurator.SYSTEM_OVERRIDE = True
+MooseConfig.SYSTEM_OVERRIDE = True
 
-cfg = MooseConfigurator('coolapp')
+cfg = MooseConfig('coolapp')
 
 server = cfg.obj.get('servername')
 proxy = cfg.obj.get('proxy')

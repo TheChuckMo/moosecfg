@@ -4,15 +4,15 @@
 
 import click
 import yaml
-from moosecfg.config import MooseConfigurator
+from moosecfg.config import MooseConfig
 
-MooseConfigurator.UPDATE_CFG_AT_INIT = True
-MooseConfigurator.UPDATE_DIRS_AT_INIT = True
-MooseConfigurator.SYSTEM_OVERRIDE = False
-MooseConfigurator.LOCAL_FILE_READ = True
-MooseConfigurator.LOCAL_FILE_HIDDEN = False
+MooseConfig.UPDATE_CFG_AT_INIT = True
+MooseConfig.UPDATE_DIRS_AT_INIT = True
+MooseConfig.SYSTEM_OVERRIDE = False
+MooseConfig.LOCAL_FILE_READ = True
+MooseConfig.LOCAL_FILE_HIDDEN = False
 
-cfg = MooseConfigurator('moapp')
+cfg = MooseConfig('moapp')
 
 
 print(f'--system-configuration--')

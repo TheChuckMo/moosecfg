@@ -1,4 +1,3 @@
-"""The Moose Configurator."""
-
-__version__ = '0.2.1'
-
+"""Moose Configurator."""
+from .config import MooseConfig
+from .utils import MooseDirs
